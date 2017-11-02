@@ -21,14 +21,23 @@ class MainTableViewController: UITableViewController, XMLParserDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let fileManager = FileManager.default
+        let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("data.plist")
+        
+        if fileManager.fileExists(atPath: url!.path){
+            items = NSArray(contentsOf: url!) as! Array
+        } else { //파일이 없을 경우
         getList()
-        let tempList = items
+        let tempList = items//목록
         items = []
         for tempItem in tempList {
             getDetail(idx: tempItem["idx"]!)
+            }
         }
         print(items)
-        tableView.reloadData()
+        
+        let temp = items as NSArray
+        temp.write(to: url!, atomically: true)
     }
 
     func getList() {
